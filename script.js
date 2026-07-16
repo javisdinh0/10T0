@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(() => {
                 // Với no-cors, response sẽ luôn là opaque (bảo mật), nên cứ mặc định là thành công nếu không có throw exception
-                form.classList.add('hidden');
-                document.querySelector('.form-header').classList.add('hidden');
+                form.style.display = 'none';
+                document.querySelector('.form-header').style.display = 'none';
                 document.getElementById('successMessage').classList.remove('hidden');
             })
             .catch(error => {
