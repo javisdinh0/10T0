@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ĐIỀN GOOGLE APPS SCRIPT WEB APP URL CỦA BẠN VÀO ĐÂY SAU KHI DEPLOY
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwcFPPLZtbdtxnGgzg--aW9ApRw0SfTdfdgigu8uC_quLC2kLq7jxWUFrV7MSSCw0lh/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwNkzgzc9a8WGnCIyQOoajnsIBm5gFqGvmjr6q9hCVk4JWOgdUFMk3HlCY4gmgGSKJH/exec';
 
     // Helper for summary mapping (for receipt)
     function buildReceiptUniformSummary(d) {
