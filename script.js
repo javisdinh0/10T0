@@ -11,22 +11,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle Gender Change to show/hide respective sections
     genderRadios.forEach(radio => {
         radio.addEventListener('change', function() {
-            // Show the uniform section wrapper
-            sectionUniform.classList.remove('hidden');
-            unisexUniforms.classList.remove('hidden');
+            try {
+                // Show the uniform section wrapper
+                sectionUniform.classList.remove('hidden');
+                sectionUniform.style.display = 'block';
+                unisexUniforms.classList.remove('hidden');
+                unisexUniforms.style.display = 'block';
 
-            if (this.value === 'Nam') {
-                maleUniforms.classList.remove('hidden');
-                femaleUniforms.classList.add('hidden');
-                
-                // Clear female inputs
-                resetSectionInputs(femaleUniforms);
-            } else if (this.value === 'Nữ') {
-                femaleUniforms.classList.remove('hidden');
-                maleUniforms.classList.add('hidden');
-                
-                // Clear male inputs
-                resetSectionInputs(maleUniforms);
+                if (this.value === 'Nam') {
+                    maleUniforms.classList.remove('hidden');
+                    maleUniforms.style.display = 'block';
+                    femaleUniforms.classList.add('hidden');
+                    femaleUniforms.style.display = 'none';
+                    
+                    // Clear female inputs
+                    resetSectionInputs(femaleUniforms);
+                } else if (this.value === 'Nữ') {
+                    femaleUniforms.classList.remove('hidden');
+                    femaleUniforms.style.display = 'block';
+                    maleUniforms.classList.add('hidden');
+                    maleUniforms.style.display = 'none';
+                    
+                    // Clear male inputs
+                    resetSectionInputs(maleUniforms);
+                }
+            } catch(e) {
+                console.error(e);
             }
         });
     });
