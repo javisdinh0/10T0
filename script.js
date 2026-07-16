@@ -31,22 +31,52 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // ĐIỀN GOOGLE APPS SCRIPT WEB APP URL CỦA BẠN VÀO ĐÂY SAU KHI DEPLOY
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxDfsGdT8fGuseflyitxgxl8_oJbK2wTbC9SSke5Za0vKlGg6irfFvgUb6IOAuiO5mT/exec';
+
     // Handle Form Submit
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (validateForm()) {
-            // Simulate form submission
             const submitBtn = form.querySelector('.btn-submit');
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Đang gửi...';
             submitBtn.disabled = true;
 
-            setTimeout(() => {
+            // Collect data
+            const formData = new FormData(form);
+            const dataObj = Object.fromEntries(formData.entries());
+
+            // Check if URL is configured
+            if (GAS_WEB_APP_URL === 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
+                alert("Bạn cần phải thay thế biến GAS_WEB_APP_URL trong script.js bằng đường link Web App thật của bạn sau khi deploy Google Apps Script!");
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            // Send to Google Apps Script
+            fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Dùng no-cors để bỏ qua lỗi preflight do Google tự động redirect
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify(dataObj)
+            })
+            .then(() => {
+                // Với no-cors, response sẽ luôn là opaque (bảo mật), nên cứ mặc định là thành công nếu không có throw exception
                 form.classList.add('hidden');
                 document.querySelector('.form-header').classList.add('hidden');
                 document.getElementById('successMessage').classList.remove('hidden');
-            }, 1000);
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại sau.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
         }
     });
 
