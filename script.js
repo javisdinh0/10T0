@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('rtDob').textContent = dataObj.dob ? dataObj.dob.split('-').reverse().join('/') : 'N/A';
         document.getElementById('rtClass').textContent = dataObj.class || 'N/A';
         document.getElementById('rtGender').textContent = dataObj.gender || 'N/A';
+        document.getElementById('rtHeight').textContent = document.getElementById('calcHeight').value ? document.getElementById('calcHeight').value + ' cm' : 'Không nhập';
+        document.getElementById('rtWeight').textContent = document.getElementById('calcWeight').value ? document.getElementById('calcWeight').value + ' kg' : 'Không nhập';
         document.getElementById('rtUniforms').textContent = buildReceiptUniformSummary(dataObj);
         document.getElementById('rtBooks').textContent = buildReceiptBooksSummary(dataObj);
         document.getElementById('rtTime').textContent = new Date().toLocaleString('vi-VN');
@@ -374,23 +376,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 3. Kiểm tra chiều cao có khớp với size theo cân nặng không
         const heightMatches = h >= byWeight.hMin && h <= byWeight.hMax;
+        
+        const btnApplySizeAlt = document.getElementById('btnApplySizeAlt');
+        
         if (!heightMatches) {
-            showCalcWarning('Chiều cao và cân nặng không tương ứng cùng một size tiêu chuẩn. Vui lòng tham khảo "Bảng size & Hướng dẫn chọn" và tự chọn size.');
-            return;
+            // Tìm size tương ứng với chiều cao
+            const byHeight = SIZE_CHART.find(s => h >= s.hMin && h <= s.hMax);
+            
+            if (byHeight && byHeight.size !== byWeight.size) {
+                // Hiện cả 2 lựa chọn
+                calcError.style.display = 'none';
+                suggestedSizeDisplay.innerHTML = `${byWeight.size.toUpperCase()}</span> hoặc <span class="size-badge">${byHeight.size.toUpperCase()}`;
+                
+                // Cập nhật text 2 nút
+                btnApplySize.textContent = `Áp dụng size ${byWeight.size.toUpperCase()}`;
+                currentSuggestedSize = byWeight.size;
+                
+                btnApplySizeAlt.textContent = `Áp dụng size ${byHeight.size.toUpperCase()}`;
+                btnApplySizeAlt.style.display = 'inline-block';
+                btnApplySizeAlt.dataset.size = byHeight.size;
+                
+                calcResult.style.display = 'flex';
+                return;
+            } else {
+                showCalcWarning('Chiều cao và cân nặng chênh lệch lớn ngoài bảng size. Vui lòng tự chọn size phù hợp.');
+                return;
+            }
         }
 
-        // 4. Cả hai khớp -> đưa ra gợi ý
+        // 4. Cả hai khớp -> đưa ra gợi ý 1 size
         calcError.style.display = 'none';
         currentSuggestedSize = byWeight.size;
         suggestedSizeDisplay.textContent = byWeight.size.toUpperCase();
+        btnApplySize.textContent = 'Áp dụng cho tất cả đồ';
+        btnApplySizeAlt.style.display = 'none';
         calcResult.style.display = 'flex';
     }
 
     calcHeight.addEventListener('input', calculateSize);
     calcWeight.addEventListener('input', calculateSize);
 
-    btnApplySize.addEventListener('click', function() {
-        if (!currentSuggestedSize) return;
+    function applySizeToAll(sizeToApply) {
+        if (!sizeToApply) return;
         
         // Apply to all visible select size elements
         const sizeSelects = document.querySelectorAll('.uniform-size-select');
@@ -399,17 +426,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const parentSection = select.closest('.clothing-items');
             if (parentSection && !parentSection.classList.contains('hidden')) {
                 // Check if the size exists in the options
-                let optionExists = Array.from(select.options).some(opt => opt.value === currentSuggestedSize);
+                let optionExists = Array.from(select.options).some(opt => opt.value === sizeToApply);
                 if(optionExists) {
-                    select.value = currentSuggestedSize;
+                    select.value = sizeToApply;
                     // Trigger change to update styling
                     select.dispatchEvent(new Event('change'));
                 }
             }
         });
         
-        alert(`Đã áp dụng size ${currentSuggestedSize.toUpperCase()} cho tất cả các đồ đồng phục bạn có thể chọn!`);
+        alert(`Đã áp dụng size ${sizeToApply.toUpperCase()} cho tất cả các đồ đồng phục bạn có thể chọn!`);
+    }
+
+    btnApplySize.addEventListener('click', function() {
+        applySizeToAll(currentSuggestedSize);
     });
+    
+    const btnApplySizeAlt = document.getElementById('btnApplySizeAlt');
+    if(btnApplySizeAlt) {
+        btnApplySizeAlt.addEventListener('click', function() {
+            applySizeToAll(this.dataset.size);
+        });
+    }
 
     // ===== Cải thiện trải nghiệm =====
     // Đóng modal đang mở bằng phím Esc

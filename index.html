@@ -124,9 +124,12 @@
                             <input type="number" id="calcWeight" placeholder="Vd: 55">
                         </div>
                     </div>
-                    <div class="calc-result" id="calcResult" style="display: none;">
-                        Size đề nghị của bạn là: <strong id="suggestedSizeDisplay" class="size-badge">M</strong>
-                        <button type="button" class="btn-apply-size" id="btnApplySize">Áp dụng cho tất cả đồ</button>
+                    <div class="calc-result" id="calcResult" style="display: none; flex-direction: column; gap: 10px; align-items: center;">
+                        <div>Size đề nghị: <strong id="suggestedSizeDisplay" class="size-badge">M</strong></div>
+                        <div id="applySizeButtonsContainer" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <button type="button" class="btn-apply-size" id="btnApplySize">Áp dụng cho tất cả đồ</button>
+                            <button type="button" class="btn-apply-size" id="btnApplySizeAlt" style="display: none;">Áp dụng size 2</button>
+                        </div>
                     </div>
                     <p class="error-message" id="calcError" style="position: relative; margin-top: 5px;">Vui lòng nhập chiều cao và cân nặng để xem gợi ý.</p>
                 </div>
@@ -559,12 +562,12 @@
                 <!-- Image will be injected here -->
             </div>
             
-            <div class="flex gap-4 justify-center flex-wrap">
-                <a id="btnDownloadReceipt" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-green-600 transition-all hidden cursor-pointer" download="Phieu_Dang_Ky.png">
-                    <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+                <a id="btnDownloadReceipt" class="btn-download hidden" download="Phieu_Dang_Ky.png">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Tải ảnh Biên nhận
                 </a>
-                <button class="btn-submit" onclick="location.reload()">Gửi phản hồi khác</button>
+                <button class="btn-clear" onclick="location.reload()" style="width: 100%;">Gửi phản hồi khác</button>
             </div>
         </div>
     </div>
@@ -660,6 +663,12 @@
             <tr><td style="padding: 8px 0; font-weight: 600;">Ngày sinh:</td><td id="rtDob" style="padding: 8px 0;"></td></tr>
             <tr><td style="padding: 8px 0; font-weight: 600;">Lớp:</td><td id="rtClass" style="padding: 8px 0;"></td></tr>
             <tr><td style="padding: 8px 0; font-weight: 600;">Giới tính:</td><td id="rtGender" style="padding: 8px 0;"></td></tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: 600;">Chiều cao:</td><td id="rtHeight" style="padding: 8px 0;"></td>
+            </tr>
+            <tr>
+                <td style="padding: 8px 0; font-weight: 600;">Cân nặng:</td><td id="rtWeight" style="padding: 8px 0;"></td>
+            </tr>
         </table>
 
         <h3 style="color: #4f46e5; font-size: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">2. Chi tiết đăng ký</h3>
