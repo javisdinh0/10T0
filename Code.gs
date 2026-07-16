@@ -42,11 +42,11 @@ function doPost(e) {
       sachVoSummary
     ]);
 
-    // 5. Tạo PDF và Gửi Mail
+    // 5. Tạo PDF và Gửi Mail (Đã tắt theo yêu cầu)
     let pdfUrl = '';
-    const pdfFile = createPdfReport(data, dongPhucSummary, sachVoSummary);
-    pdfUrl = pdfFile.getUrl();
-    sendEmailWithPdf(data.email, data.fullName, pdfFile);
+    // const pdfFile = createPdfReport(data, dongPhucSummary, sachVoSummary);
+    // pdfUrl = pdfFile.getUrl();
+    // sendEmailWithPdf(data.email, data.fullName, pdfFile);
 
     // Thành công
     return ContentService.createTextOutput(JSON.stringify({
