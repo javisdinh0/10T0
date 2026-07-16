@@ -554,11 +554,23 @@
             <div class="success-icon">✓</div>
             <h3>Đăng ký thành công!</h3>
             <p>Thông tin đăng ký đồng phục và sách vở của học sinh đã được ghi nhận.</p>
-            <button class="btn-submit" onclick="location.reload()">Gửi phản hồi khác</button>
+            
+            <div id="receiptPreviewContainer" class="mt-6 mb-6 rounded-lg overflow-hidden border border-gray-200 shadow-sm" style="max-height: 400px; overflow-y: auto;">
+                <!-- Image will be injected here -->
+            </div>
+            
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a id="btnDownloadReceipt" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow hover:bg-green-600 transition-all hidden cursor-pointer" download="Phieu_Dang_Ky.png">
+                    <svg class="inline-block w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Tải ảnh Biên nhận
+                </a>
+                <button class="btn-submit" onclick="location.reload()">Gửi phản hồi khác</button>
+            </div>
         </div>
     </div>
 
     <!-- Modals -->
+    <!-- ... (existing modals) ... -->
     <div id="modal-uniform" class="modal-overlay hidden" onclick="closeModal(event, 'modal-uniform')">
         <div class="modal-content">
             <div class="modal-header">
@@ -633,6 +645,42 @@
         </div>
     </div>
 
+    <!-- Hidden Receipt Template for html2canvas -->
+    <div id="receiptTemplate" style="position: absolute; left: -9999px; top: -9999px; width: 700px; background: white; padding: 40px; border: 1px solid #ddd; font-family: 'Inter', sans-serif; color: #1f2937;">
+        <div style="text-align: center; border-bottom: 2px solid #4f46e5; padding-bottom: 20px; margin-bottom: 20px;">
+            <h2 style="color: #4f46e5; margin: 0; font-size: 24px; font-weight: 800;">PHIẾU XÁC NHẬN ĐĂNG KÝ</h2>
+            <p style="margin: 5px 0 0; color: #6b7280; font-size: 16px;">Đồng phục & Sách vở - Năm học 2026-2027</p>
+            <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px;">Trường THPT Newton (Cơ sở 1)</p>
+        </div>
+        
+        <h3 style="color: #4f46e5; font-size: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">1. Thông tin học sinh</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr><td style="padding: 8px 0; width: 150px; font-weight: 600;">Họ và tên:</td><td id="rtFullName" style="padding: 8px 0;"></td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Email:</td><td id="rtEmail" style="padding: 8px 0;"></td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Ngày sinh:</td><td id="rtDob" style="padding: 8px 0;"></td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Lớp:</td><td id="rtClass" style="padding: 8px 0;"></td></tr>
+            <tr><td style="padding: 8px 0; font-weight: 600;">Giới tính:</td><td id="rtGender" style="padding: 8px 0;"></td></tr>
+        </table>
+
+        <h3 style="color: #4f46e5; font-size: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">2. Chi tiết đăng ký</h3>
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1; background: #f9fafb; padding: 15px; border-radius: 8px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: #111827; font-size: 16px;">Đồng phục</h4>
+                <div id="rtUniforms" style="white-space: pre-line; line-height: 1.6; font-size: 14px;"></div>
+            </div>
+            <div style="flex: 1; background: #f9fafb; padding: 15px; border-radius: 8px;">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: #111827; font-size: 16px;">Sách vở</h4>
+                <div id="rtBooks" style="white-space: pre-line; line-height: 1.6; font-size: 14px;"></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: right; color: #6b7280; font-size: 13px; font-style: italic;">
+            Thời gian ghi nhận: <span id="rtTime"></span>
+        </div>
+    </div>
+
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -44,49 +44,126 @@ document.addEventListener('DOMContentLoaded', function() {
     // ĐIỀN GOOGLE APPS SCRIPT WEB APP URL CỦA BẠN VÀO ĐÂY SAU KHI DEPLOY
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxS-fEZ3e9WOTyTnh7c4IgJ7wozr5iRVCfkLj_cXgJsvv7bBidgZ5n1xAborN1V2te3/exec';
 
+    // Helper for summary mapping (for receipt)
+    function buildReceiptUniformSummary(d) {
+        let items = [];
+        if (d.male_pants_kaki_qty && d.male_pants_kaki_qty !== "0") items.push(`Quần kaki (Nam): ${d.male_pants_kaki_qty} x (Size ${d.male_pants_kaki_size})`);
+        if (d.male_pants_short_qty && d.male_pants_short_qty !== "0") items.push(`Quần sooc (Nam): ${d.male_pants_short_qty} x (Size ${d.male_pants_short_size})`);
+        if (d.male_shirt_short_qty && d.male_shirt_short_qty !== "0") items.push(`Áo sơ mi cộc tay (Nam): ${d.male_shirt_short_qty} x (Size ${d.male_shirt_short_size})`);
+        if (d.male_shirt_long_qty && d.male_shirt_long_qty !== "0") items.push(`Áo sơ mi dài tay (Nam): ${d.male_shirt_long_qty} x (Size ${d.male_shirt_long_size})`);
+        if (d.female_skirt_qty && d.female_skirt_qty !== "0") items.push(`Chân váy (Nữ): ${d.female_skirt_qty} x (Size ${d.female_skirt_size})`);
+        if (d.female_shirt_short_qty && d.female_shirt_short_qty !== "0") items.push(`Áo sơ mi cộc tay (Nữ): ${d.female_shirt_short_qty} x (Size ${d.female_shirt_short_size})`);
+        if (d.female_shirt_long_qty && d.female_shirt_long_qty !== "0") items.push(`Áo sơ mi dài tay (Nữ): ${d.female_shirt_long_qty} x (Size ${d.female_shirt_long_size})`);
+        if (d.unisex_polo_white_qty && d.unisex_polo_white_qty !== "0") items.push(`Áo polo trắng: ${d.unisex_polo_white_qty} x (Size ${d.unisex_polo_white_size})`);
+        if (d.unisex_polo_blue_qty && d.unisex_polo_blue_qty !== "0") items.push(`Áo polo xanh: ${d.unisex_polo_blue_qty} x (Size ${d.unisex_polo_blue_size})`);
+        if (d.unisex_sport_summer_qty && d.unisex_sport_summer_qty !== "0") items.push(`Bộ thể thao hè: ${d.unisex_sport_summer_qty} x (Size ${d.unisex_sport_summer_size})`);
+        return items.length > 0 ? "- " + items.join("\n- ") : "Không đăng ký";
+    }
+
+    function buildReceiptBooksSummary(d) {
+        let items = [];
+        if (d.sgk_vn_10 && d.sgk_vn_10 !== "0") items.push(`SGK VN Lớp 10: ${d.sgk_vn_10} bộ`);
+        if (d.sgk_vn_11 && d.sgk_vn_11 !== "0") items.push(`SGK VN Lớp 11: ${d.sgk_vn_11} bộ`);
+        if (d.sgk_vn_12 && d.sgk_vn_12 !== "0") items.push(`SGK VN Lớp 12: ${d.sgk_vn_12} bộ`);
+        if (d.sgk_nn_10 && d.sgk_nn_10 !== "0") items.push(`SGK NN Lớp 10: ${d.sgk_nn_10} bộ`);
+        if (d.sgk_nn_11 && d.sgk_nn_11 !== "0") items.push(`SGK NN Lớp 11: ${d.sgk_nn_11} bộ`);
+        if (d.sgk_nn_12 && d.sgk_nn_12 !== "0") items.push(`SGK NN Lớp 12: ${d.sgk_nn_12} bộ`);
+        if (d.notebook_qty && d.notebook_qty !== "" && d.notebook_qty !== "0") items.push(`Vở kẻ ngang: ${d.notebook_qty} quyển`);
+        return items.length > 0 ? "- " + items.join("\n- ") : "Không đăng ký";
+    }
+
     // Handle Form Submit
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        if (validateForm()) {
-            const submitBtn = form.querySelector('.btn-submit');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Đang gửi...';
-            submitBtn.disabled = true;
-
-            // Collect data
-            const formData = new FormData(form);
-            const dataObj = Object.fromEntries(formData.entries());
-
-            // Check if URL is configured
-            if (GAS_WEB_APP_URL === 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE') {
-                alert("Bạn cần phải thay thế biến GAS_WEB_APP_URL trong script.js bằng đường link Web App thật của bạn sau khi deploy Google Apps Script!");
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-                return;
+        // Custom validation check before submitting
+        let firstError = null;
+        let hasError = false;
+        
+        const clothingItems = document.querySelectorAll('.clothing-item');
+        clothingItems.forEach(item => {
+            if (item.closest('.hidden')) return;
+            const qtySelect = item.querySelector('select[name$="_qty"]');
+            const sizeSelect = item.querySelector('select[name$="_size"]');
+            const errorMsg = item.querySelector('.size-error-msg');
+            
+            if (qtySelect && sizeSelect && qtySelect.value !== "0" && sizeSelect.value === "") {
+                item.classList.add('item-error');
+                if (errorMsg) errorMsg.style.display = 'block';
+                hasError = true;
+                if (!firstError) firstError = item;
             }
+        });
+        
+        if (hasError) {
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            alert("Vui lòng chọn size cho các trang phục bạn đã điền số lượng!");
+            return; // Stop submission
+        }
 
-            // Gửi tới Google Apps Script.
-            // Dùng Content-Type text/plain để tránh preflight (simple request),
-            // nhưng KHÔNG dùng no-cors để còn đọc được kết quả thật (success/error) từ backend.
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Đang gửi...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+        const dataObj = Object.fromEntries(formData.entries());
+
+        // Check if URL is configured
+        if (GAS_WEB_APP_URL === 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE' || GAS_WEB_APP_URL.includes('YOUR_')) {
+            alert("Bạn cần phải thay thế biến GAS_WEB_APP_URL trong script.js bằng đường link Web App thật của bạn sau khi deploy Google Apps Script!");
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        // --- Generate Receipt Image before hiding form ---
+        // Fill receipt template
+        document.getElementById('rtFullName').textContent = dataObj.fullName || 'N/A';
+        document.getElementById('rtEmail').textContent = dataObj.email || 'N/A';
+        document.getElementById('rtDob').textContent = dataObj.dob ? dataObj.dob.split('-').reverse().join('/') : 'N/A';
+        document.getElementById('rtClass').textContent = dataObj.class || 'N/A';
+        document.getElementById('rtGender').textContent = dataObj.gender || 'N/A';
+        document.getElementById('rtUniforms').textContent = buildReceiptUniformSummary(dataObj);
+        document.getElementById('rtBooks').textContent = buildReceiptBooksSummary(dataObj);
+        document.getElementById('rtTime').textContent = new Date().toLocaleString('vi-VN');
+
+        const receiptTemplate = document.getElementById('receiptTemplate');
+        
+        // Use html2canvas to capture the receipt
+        html2canvas(receiptTemplate, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL("image/png");
+            const previewImg = document.createElement('img');
+            previewImg.src = imgData;
+            previewImg.style.width = '100%';
+            previewImg.style.display = 'block';
+            
+            const container = document.getElementById('receiptPreviewContainer');
+            container.innerHTML = '';
+            container.appendChild(previewImg);
+
+            const downloadBtn = document.getElementById('btnDownloadReceipt');
+            downloadBtn.href = imgData;
+            const safeName = (dataObj.fullName || 'HocSinh').replace(/[^a-zA-Z0-9]/g, '_');
+            downloadBtn.download = `Bien_Nhan_${safeName}.png`;
+            downloadBtn.classList.remove('hidden');
+
+            // Send to Google Apps Script in background
             fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify(dataObj)
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result && result.status === 'success') {
-                    form.style.display = 'none';
-                    document.querySelector('.form-header').style.display = 'none';
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    // Backend nhận được nhưng xử lý lỗi -> báo đúng nội dung lỗi
-                    throw new Error((result && result.message) ? result.message : 'Đăng ký chưa được ghi nhận.');
-                }
+            .then(() => {
+                form.style.display = 'none';
+                const formHeader = document.querySelector('.form-header');
+                if(formHeader) formHeader.style.display = 'none';
+                document.getElementById('successMessage').classList.remove('hidden');
             })
             .catch(error => {
                 console.error('Error!', error);
@@ -94,7 +171,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             });
-        }
+        }).catch(error => {
+            console.error("html2canvas error:", error);
+            // Fallback if canvas fails
+            fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(dataObj)
+            }).then(() => {
+                form.style.display = 'none';
+                const formHeader = document.querySelector('.form-header');
+                if(formHeader) formHeader.style.display = 'none';
+                document.getElementById('successMessage').classList.remove('hidden');
+            });
+        });
     });
 
     // Handle Clear Button
