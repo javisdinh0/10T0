@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký đồng phục & sách vở - Newton Grammar School</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <div class="container">
+        <header class="form-header">
+            <h1>ĐĂNG KÝ ĐỒNG PHỤC - SÁCH VỞ</h1>
+            <h2>LỚP 10T0 (CS1) NĂM HỌC 2026-2027</h2>
+            
+            <div class="notice-box">
+                <h3 class="notice-title">🔔 LƯU Ý DÀNH CHO PHHS:</h3>
+                <ol class="notice-list">
+                    <li><strong>Kiểm tra thông tin đăng ký:</strong>
+                        <p>PHHS vui lòng kiểm tra lại toàn bộ thông tin đã đăng ký tại email cá nhân đã cung cấp khi điền form.</p>
+                        <p>Nếu không nhận được email, vui lòng kiểm tra mục Spam/Thư rác, hoặc liên hệ GVCN để được hỗ trợ.</p>
+                    </li>
+                    <li><strong>Điều chỉnh thông tin đăng ký:</strong>
+                        <p>Trong thời gian chưa hết hạn đăng ký, nếu có thay đổi, PHHS chỉ cần đăng ký lại, hệ thống sẽ ghi nhận bản mới nhất.</p>
+                    </li>
+                    <li><strong>Huỷ đăng ký:</strong>
+                        <p>Nếu không có nhu cầu đăng ký đồng phục nữa, PHHS vui lòng thông báo với GVCN.</p>
+                    </li>
+                    <li><strong>Thời gian phát đồng phục - sách, vở:</strong>
+                        <p>Dự kiến: Phát sách vở, đồng phục mùa hè: Từ 10/08/2026 đến 20/08/2026.</p>
+                        <p>Đồng phục mùa đông: Phụ huynh đăng ký bổ sung đợt 2 & phát trong tháng 10/2026.</p>
+                        <p>GVCN sẽ nhận đồng phục và phát về cho từng học sinh.</p>
+                    </li>
+                    <li><strong>Thời gian đăng ký đợt 1 : ĐĂNG KÝ ĐỒNG PHỤC HÈ</strong>
+                        <p>Kết thúc vào: 19/07/2026. Sau thời gian này, mọi điều chỉnh/hủy bỏ sẽ không được tiếp nhận.</p>
+                    </li>
+                </ol>
+            </div>
+        </header>
+
+        <form id="registrationForm" novalidate>
+            <!-- Section 1: Thông tin học sinh -->
+            <section class="form-section glass-panel">
+                <h3>1. Thông tin học sinh</h3>
+                
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="Nhập địa chỉ email của bạn">
+                    <span class="error-message">Vui lòng nhập địa chỉ email hợp lệ.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName">Họ tên học sinh <span class="required">*</span></label>
+                    <p class="field-hint">*Vui lòng không thay đổi nội dung thông tin</p>
+                    <input type="text" id="fullName" name="fullName" required placeholder="Ví dụ: Nguyễn Văn A">
+                    <span class="error-message">Vui lòng nhập họ tên học sinh.</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="dob">Ngày sinh <span class="required">*</span></label>
+                        <input type="date" id="dob" name="dob" required>
+                        <span class="error-message">Vui lòng chọn ngày sinh.</span>
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label for="class">Lớp <span class="required">*</span></label>
+                        <input type="text" id="class" name="class" required value="10T0" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Giới tính <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="Nam" required>
+                            <span class="radio-custom"></span>
+                            Nam
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="Nữ" required>
+                            <span class="radio-custom"></span>
+                            Nữ
+                        </label>
+                    </div>
+                    <span class="error-message">Vui lòng chọn giới tính.</span>
+                </div>
+            </section>
+
+            <!-- Section 2: Đồng phục -->
+            <section id="sectionUniform" class="form-section glass-panel">
+                <h3>2. Đăng ký đồng phục</h3>
+                <p class="section-desc">Phụ huynh bỏ trống hoặc chọn "Không" nếu không đăng ký.</p>
+                
+                <div class="helper-links">
+                    <button type="button" class="helper-link" onclick="openModal('modal-uniform')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        Xem hình ảnh đồng phục
+                    </button>
+                    <button type="button" class="helper-link" onclick="openModal('modal-size')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Bảng size & Hướng dẫn chọn
+                    </button>
+                </div>
+                
+                <!-- Công cụ tính Size đề nghị -->
+                <div class="size-calculator">
+                    <h4><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20" style="vertical-align: text-bottom; margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg> Công cụ Gợi ý Size</h4>
+                    <div class="calc-inputs">
+                        <div class="calc-group">
+                            <label>Chiều cao (cm)</label>
+                            <input type="number" id="calcHeight" placeholder="Vd: 160">
+                        </div>
+                        <div class="calc-group">
+                            <label>Cân nặng (kg)</label>
+                            <input type="number" id="calcWeight" placeholder="Vd: 55">
+                        </div>
+                    </div>
+                    <div class="calc-result" id="calcResult" style="display: none;">
+                        Size đề nghị của bạn là: <strong id="suggestedSizeDisplay" class="size-badge">M</strong>
+                        <button type="button" class="btn-apply-size" id="btnApplySize">Áp dụng cho tất cả đồ</button>
+                    </div>
+                    <p class="error-message" id="calcError" style="position: relative; margin-top: 5px;">Vui lòng nhập chiều cao và cân nặng để xem gợi ý.</p>
+                </div>
+                
+                <!-- Đồng phục Nam -->
+                <div id="maleUniforms" class="clothing-items hidden">
+                    <h4 class="subsection-title">Đồng phục Nam</h4>
+                    <div class="clothing-item">
+                        <h4>Quần kaki</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="male_pants_kaki_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="male_pants_kaki_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="clothing-item">
+                        <h4>Quần sooc</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="male_pants_short_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="male_pants_short_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Áo sơ mi cộc tay</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="male_shirt_short_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="male_shirt_short_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Áo sơ mi dài tay</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="male_shirt_long_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="male_shirt_long_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đồng phục Nữ -->
+                <div id="femaleUniforms" class="clothing-items hidden">
+                    <h4 class="subsection-title">Đồng phục Nữ</h4>
+                    <div class="clothing-item">
+                        <h4>Chân váy</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="female_skirt_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="female_skirt_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Áo sơ mi cộc tay</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="female_shirt_short_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="female_shirt_short_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Áo sơ mi dài tay</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="female_shirt_long_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="female_shirt_long_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đồng phục Chung (Nam & Nữ) -->
+                <div id="unisexUniforms" class="clothing-items mt-3 hidden">
+                    <h4 class="subsection-title">Đồng phục chung (Nam & Nữ)</h4>
+                    <div class="clothing-item">
+                        <h4>Áo polo trắng</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="unisex_polo_white_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="unisex_polo_white_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Áo polo xanh</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="unisex_polo_blue_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="unisex_polo_blue_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clothing-item">
+                        <h4>Bộ thể thao hè</h4>
+                        <div class="item-controls">
+                            <div class="control-group">
+                                <label>Số lượng:</label>
+                                <select name="unisex_sport_summer_qty">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Size:</label>
+                                <select name="unisex_sport_summer_size" class="uniform-size-select">
+                                    <option value="">Chọn size</option>
+                                    <option value="xs">XS</option>
+                                    <option value="s">S</option>
+                                    <option value="m">M</option>
+                                    <option value="l">L</option>
+                                    <option value="xl">XL</option>
+                                    <option value="2xl">2XL</option>
+                                    <option value="3xl">3XL</option>
+                                    <option value="4xl">4XL</option>
+                                    <option value="5xl">5XL</option>
+                                    <option value="6xl">6XL</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Sách vở -->
+            <section class="form-section glass-panel">
+                <h3>3. Đăng ký sách vở</h3>
+                
+                <div class="clothing-items">
+                    <div class="flex-heading">
+                        <h4 class="subsection-title mb-0">Sách giáo khoa Việt Nam</h4>
+                        <button type="button" class="helper-link" onclick="openModal('modal-sgk-vn')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            Xem danh mục
+                        </button>
+                    </div>
+                    
+                    <div class="clothing-item mt-2">
+                        <h4>Đăng ký sách giáo khoa Việt Nam</h4>
+                        <div class="item-controls flex-wrap">
+                            <div class="control-group">
+                                <label>Lớp 10:</label>
+                                <select name="sgk_vn_10">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Lớp 11:</label>
+                                <select name="sgk_vn_11">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Lớp 12:</label>
+                                <select name="sgk_vn_12">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-heading mt-4">
+                        <h4 class="subsection-title mb-0">Sách giáo khoa Nước Ngoài</h4>
+                        <button type="button" class="helper-link" onclick="openModal('modal-sgk-nn')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            Xem danh mục
+                        </button>
+                    </div>
+
+                    <div class="clothing-item mt-2">
+                        <h4>Đăng ký sách giáo khoa Nước Ngoài</h4>
+                        <div class="item-controls flex-wrap">
+                            <div class="control-group">
+                                <label>Lớp 10:</label>
+                                <select name="sgk_nn_10">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Lớp 11:</label>
+                                <select name="sgk_nn_11">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>Lớp 12:</label>
+                                <select name="sgk_nn_12">
+                                    <option value="0">Không</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="subsection-title mt-4">Vở kẻ ngang</h4>
+                    <p class="field-hint">Phụ huynh điền số lượng cần đăng ký</p>
+                    <div class="form-group mb-0">
+                        <label for="notebook_qty">Số lượng Vở kẻ ngang</label>
+                        <input type="number" id="notebook_qty" name="notebook_qty" min="0" placeholder="0">
+                    </div>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Gửi đăng ký</button>
+                <button type="button" class="btn-clear" id="btnClear">Xóa mẫu</button>
+            </div>
+        </form>
+        
+        <div id="successMessage" class="glass-panel hidden success-modal">
+            <div class="success-icon">✓</div>
+            <h3>Đăng ký thành công!</h3>
+            <p>Thông tin đăng ký đồng phục và sách vở của học sinh đã được ghi nhận.</p>
+            <button class="btn-submit" onclick="location.reload()">Gửi phản hồi khác</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-uniform" class="modal-overlay hidden" onclick="closeModal(event, 'modal-uniform')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Hình ảnh đồng phục</h3>
+                <button class="btn-close" onclick="closeModalBtn('modal-uniform')">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://docs.google.com/document/d/1sipkvYzrMj9OuXDVJ7NT8rT3hUrtNEjR1QaT4f2dkfM/preview" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-size" class="modal-overlay hidden" onclick="closeModal(event, 'modal-size')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bảng Size Đồng Phục</h3>
+                <button class="btn-close" onclick="closeModalBtn('modal-size')">×</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <h4 style="color: #d32f2f; text-align: center; margin-bottom: 1rem;">THÔNG SỐ CHIỀU CAO CÂN NẶNG</h4>
+                <table class="size-table">
+                    <thead>
+                        <tr>
+                            <th>SIZE</th>
+                            <th>CHIỀU CAO (cm)</th>
+                            <th>CÂN NẶNG (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Số 5</td><td>140-145</td><td>40-45</td></tr>
+                        <tr><td>XS</td><td>140-145</td><td>45-50</td></tr>
+                        <tr><td>S</td><td>150-155</td><td>50-55</td></tr>
+                        <tr><td>M</td><td>158-160</td><td>55-60</td></tr>
+                        <tr><td>L</td><td>165-170</td><td>60-65</td></tr>
+                        <tr><td>XL</td><td>172-176</td><td>65-70</td></tr>
+                        <tr><td>2XL</td><td>178-180</td><td>70-75</td></tr>
+                        <tr><td>3XL</td><td>178-180</td><td>75-80</td></tr>
+                        <tr><td>4XL</td><td>178-180</td><td>80-85</td></tr>
+                        <tr><td>5XL</td><td>178-180</td><td>85-90</td></tr>
+                        <tr><td>6XL</td><td>178-180</td><td>90-95</td></tr>
+                        <tr><td>7XL</td><td>178-180</td><td>95-100</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-sgk-vn" class="modal-overlay hidden" onclick="closeModal(event, 'modal-sgk-vn')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Danh mục SGK Việt Nam</h3>
+                <button class="btn-close" onclick="closeModalBtn('modal-sgk-vn')">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://docs.google.com/spreadsheets/d/10HRw-Gv-AIRNVWWrnSMOCgTGMpYWaAF_/preview" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-sgk-nn" class="modal-overlay hidden" onclick="closeModal(event, 'modal-sgk-nn')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Danh mục SGK Nước Ngoài</h3>
+                <button class="btn-close" onclick="closeModalBtn('modal-sgk-nn')">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe src="https://docs.google.com/spreadsheets/d/1xBdcRLSeDTtfrxTfb7Zekl41_aJVP40F/preview" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
