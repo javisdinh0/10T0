@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ĐIỀN GOOGLE APPS SCRIPT WEB APP URL CỦA BẠN VÀO ĐÂY SAU KHI DEPLOY
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzA2SBWZcUZabgzx3kaNJ-5-O7UdGczLcbzOBfIBdfKqJd29Jbp0OR8QmfJOTFRXotl/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxS-fEZ3e9WOTyTnh7c4IgJ7wozr5iRVCfkLj_cXgJsvv7bBidgZ5n1xAborN1V2te3/exec';
 
     // Handle Form Submit
     form.addEventListener('submit', function(e) {
@@ -66,24 +66,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Send to Google Apps Script
+            // Gửi tới Google Apps Script.
+            // Dùng Content-Type text/plain để tránh preflight (simple request),
+            // nhưng KHÔNG dùng no-cors để còn đọc được kết quả thật (success/error) từ backend.
             fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Dùng no-cors để bỏ qua lỗi preflight do Google tự động redirect
                 headers: {
                     'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify(dataObj)
             })
-            .then(() => {
-                // Với no-cors, response sẽ luôn là opaque (bảo mật), nên cứ mặc định là thành công nếu không có throw exception
-                form.style.display = 'none';
-                document.querySelector('.form-header').style.display = 'none';
-                document.getElementById('successMessage').classList.remove('hidden');
+            .then(response => response.json())
+            .then(result => {
+                if (result && result.status === 'success') {
+                    form.style.display = 'none';
+                    document.querySelector('.form-header').style.display = 'none';
+                    document.getElementById('successMessage').classList.remove('hidden');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    // Backend nhận được nhưng xử lý lỗi -> báo đúng nội dung lỗi
+                    throw new Error((result && result.message) ? result.message : 'Đăng ký chưa được ghi nhận.');
+                }
             })
             .catch(error => {
-                console.error('Error!', error.message);
-                alert('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại sau.');
+                console.error('Error!', error);
+                alert('Có lỗi xảy ra khi gửi dữ liệu:\n' + error.message + '\n\nVui lòng thử lại hoặc liên hệ GVCN để được hỗ trợ.');
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
             });
@@ -101,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Remove error classes
             document.querySelectorAll('.form-group.error').forEach(el => {
                 el.classList.remove('error');
+            });
+            document.querySelectorAll('.clothing-item.item-error').forEach(el => {
+                el.classList.remove('item-error');
             });
             
             // Reset custom select styling
@@ -120,6 +130,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset previous errors
         document.querySelectorAll('.form-group.error').forEach(el => {
             el.classList.remove('error');
+        });
+        document.querySelectorAll('.clothing-item.item-error').forEach(el => {
+            el.classList.remove('item-error');
         });
 
         // Validate Email
@@ -151,9 +164,34 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
 
+        // Validate size: món đồng phục đã chọn số lượng (>0) thì bắt buộc chọn size
+        document.querySelectorAll('.clothing-item').forEach(item => {
+            const sizeSel = item.querySelector('.uniform-size-select');
+            if (!sizeSel) return; // các mục sách không có size
+            const qtySel = item.querySelector('select[name$="_qty"]');
+            if (!qtySel) return;
+
+            // Bỏ qua section đang ẩn (đã được reset về 0)
+            const parentGroup = sizeSel.closest('.clothing-items');
+            if (parentGroup && parentGroup.classList.contains('hidden')) return;
+
+            if (qtySel.value && qtySel.value !== '0' && !sizeSel.value) {
+                item.classList.add('item-error');
+
+                // Chèn thông báo lỗi nếu chưa có
+                if (!item.querySelector('.size-error-msg')) {
+                    const msg = document.createElement('p');
+                    msg.className = 'size-error-msg';
+                    msg.textContent = 'Vui lòng chọn size cho món đã đăng ký số lượng.';
+                    item.appendChild(msg);
+                }
+                isValid = false;
+            }
+        });
+
         // Scroll to first error
         if (!isValid) {
-            const firstError = document.querySelector('.form-group.error');
+            const firstError = document.querySelector('.form-group.error, .clothing-item.item-error');
             if (firstError) {
                 firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -186,6 +224,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.style.borderColor = '#d1d5db';
                 this.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
             }
+            // Xóa cảnh báo thiếu size khi người dùng thao tác lại trong món đó
+            const parentItem = this.closest('.clothing-item');
+            if (parentItem) parentItem.classList.remove('item-error');
         });
     });
 
@@ -198,41 +239,59 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnApplySize = document.getElementById('btnApplySize');
     let currentSuggestedSize = '';
 
+    // Bảng size chuẩn (khớp với Bảng size trong modal).
+    // Cân nặng quyết định size, chiều cao dùng để kiểm tra tính nhất quán.
+    // Chỉ gợi ý khi CẢ chiều cao và cân nặng cùng khớp một size; nếu không -> cảnh báo tự chọn.
+    const SIZE_CHART = [
+        { size: 'xs',  wMin: 40, wMax: 50, hMin: 138, hMax: 150 }, // gộp Số 5 + XS
+        { size: 's',   wMin: 50, wMax: 55, hMin: 148, hMax: 157 },
+        { size: 'm',   wMin: 55, wMax: 60, hMin: 155, hMax: 163 },
+        { size: 'l',   wMin: 60, wMax: 65, hMin: 161, hMax: 171 },
+        { size: 'xl',  wMin: 65, wMax: 70, hMin: 169, hMax: 178 },
+        { size: '2xl', wMin: 70, wMax: 75, hMin: 176, hMax: 182 },
+        { size: '3xl', wMin: 75, wMax: 80, hMin: 176, hMax: 183 },
+        { size: '4xl', wMin: 80, wMax: 85, hMin: 176, hMax: 184 },
+        { size: '5xl', wMin: 85, wMax: 90, hMin: 176, hMax: 185 },
+        { size: '6xl', wMin: 90, wMax: 95, hMin: 176, hMax: 186 }
+    ];
+
+    function showCalcWarning(msg) {
+        calcResult.style.display = 'none';
+        calcError.textContent = msg;
+        calcError.style.display = 'block';
+        currentSuggestedSize = '';
+    }
+
     function calculateSize() {
-        const h = parseInt(calcHeight.value);
-        const w = parseInt(calcWeight.value);
-        
+        const h = parseFloat(calcHeight.value);
+        const w = parseFloat(calcWeight.value);
+
+        // 1. Bắt buộc nhập ĐẦY ĐỦ cả chiều cao và cân nặng
         if (!h || !w) {
-            calcResult.style.display = 'none';
-            calcError.style.display = 'block';
-            currentSuggestedSize = '';
+            showCalcWarning('Vui lòng nhập cả chiều cao và cân nặng để xem gợi ý.');
             return;
         }
-        
+
+        // 2. Tìm size theo cân nặng
+        const byWeight = SIZE_CHART.find(s => w >= s.wMin && w < s.wMax);
+
+        // Ngoài bảng size tiêu chuẩn (quá nhỏ, quá lớn, hoặc rơi vào 7XL không có trong danh sách chọn)
+        if (!byWeight) {
+            showCalcWarning('Số đo nằm ngoài bảng size tiêu chuẩn. Vui lòng bấm "Bảng size & Hướng dẫn chọn" để tự chọn size phù hợp.');
+            return;
+        }
+
+        // 3. Kiểm tra chiều cao có khớp với size theo cân nặng không
+        const heightMatches = h >= byWeight.hMin && h <= byWeight.hMax;
+        if (!heightMatches) {
+            showCalcWarning('Chiều cao và cân nặng không tương ứng cùng một size tiêu chuẩn. Vui lòng tham khảo "Bảng size & Hướng dẫn chọn" và tự chọn size.');
+            return;
+        }
+
+        // 4. Cả hai khớp -> đưa ra gợi ý
         calcError.style.display = 'none';
-        
-        let size = '';
-        
-        // Simple logic based on the chart
-        if (h <= 145 && w <= 45) size = 'xs'; // Combining Số 5 and XS for simplicity
-        else if (h <= 145 && w <= 50) size = 'xs';
-        else if (h <= 155 && w <= 55) size = 's';
-        else if (h <= 160 && w <= 60) size = 'm';
-        else if (h <= 170 && w <= 65) size = 'l';
-        else if (h <= 176 && w <= 70) size = 'xl';
-        else if (h <= 180 && w <= 75) size = '2xl';
-        else if (h <= 180 && w <= 80) size = '3xl';
-        else if (h <= 180 && w <= 85) size = '4xl';
-        else if (h <= 180 && w <= 90) size = '5xl';
-        else if (h <= 180 && w <= 95) size = '6xl';
-        else size = '7xl';
-
-        // Additional safeguard for edge cases
-        if(w > 95) size = '7xl';
-        if(w < 40) size = 'xs';
-
-        currentSuggestedSize = size;
-        suggestedSizeDisplay.textContent = size.toUpperCase();
+        currentSuggestedSize = byWeight.size;
+        suggestedSizeDisplay.textContent = byWeight.size.toUpperCase();
         calcResult.style.display = 'flex';
     }
 
@@ -260,6 +319,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         alert(`Đã áp dụng size ${currentSuggestedSize.toUpperCase()} cho tất cả các đồ đồng phục bạn có thể chọn!`);
     });
+
+    // ===== Cải thiện trải nghiệm =====
+    // Đóng modal đang mở bằng phím Esc
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m => closeModalBtn(m.id));
+        }
+    });
+
+    // Tránh input number bị đổi giá trị ngoài ý muốn khi lăn chuột
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('wheel', function() { this.blur(); });
+    });
+
+    // Ngày sinh: không cho chọn ngày trong tương lai
+    const dobInput = document.getElementById('dob');
+    if (dobInput) {
+        dobInput.max = new Date().toISOString().split('T')[0];
+    }
 });
 
 // Modal functions in global scope for onclick attributes

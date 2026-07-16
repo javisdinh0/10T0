@@ -43,8 +43,9 @@ body {
 .circle {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(60px);
     opacity: 0.5;
+    will-change: transform;
     animation: float 20s infinite alternate ease-in-out;
 }
 
@@ -205,6 +206,9 @@ h3 {
 .mt-4 { margin-top: 2rem; }
 .mb-0 { margin-bottom: 0 !important; }
 .flex-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 0.5rem; }
+
+/* Ẩn thật sự các phần tử gắn class "hidden" (thông báo thành công, các mục đồng phục ẩn theo giới tính...) */
+.hidden { display: none !important; }
 
 /* Form Groups */
 .form-group {
@@ -559,12 +563,25 @@ input[readonly] {
 .modal-body {
     flex: 1;
     overflow-y: auto;
+    position: relative;
 }
 
 .modal-body iframe {
     width: 100%;
     height: 100%;
     border: none;
+}
+
+.iframe-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    background: #fff;
+    z-index: 1;
 }
 
 .size-table {
@@ -651,6 +668,23 @@ input[readonly] {
     display: block;
 }
 
+/* Lỗi thiếu size cho món đã chọn số lượng */
+.clothing-item.item-error {
+    border-color: var(--danger);
+    background: #fef2f2;
+}
+
+.clothing-item.item-error .uniform-size-select {
+    border-color: var(--danger);
+}
+
+.size-error-msg {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+
 /* Success Modal */
 .success-modal {
     text-align: center;
@@ -721,5 +755,23 @@ input[readonly] {
     
     .btn-apply-size {
         margin: 0 auto;
+    }
+}
+
+/* Giảm chuyển động cho máy yếu / người dùng bật "reduce motion" -> đỡ giật, tiết kiệm pin */
+@media (prefers-reduced-motion: reduce) {
+    .circle {
+        animation: none;
+    }
+
+    .glass-panel,
+    .glass-panel:hover,
+    .btn-submit:hover {
+        transform: none;
+        transition: none;
+    }
+
+    * {
+        scroll-behavior: auto !important;
     }
 }
